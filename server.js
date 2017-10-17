@@ -6,25 +6,48 @@ var fs = require('fs');
 var port = process.env.PORT || 8000;
 app.use(bodyParser.json({ extended: true }));
 
+
+function readToJson(filePath){
+  return new Promise((resolve, reject)=>{
+    fs.readFile(filePath, 'utf8', (err, data)=>{
+      if(err){
+        reject(err);
+      }else{
+        resolve(JSON.parse(data));
+      }
+    });
+  });
+}
+
+function writeToJson(filePath, obj){
+
+  return new Promise((resolve, reject)=>{
+    fs.writeFile(filePath, JSON.stringify(obj), function(err){
+      if(err){
+        reject(err);
+      }else{
+        resolve();
+      }
+    })
+  })
+}
+
 // CRUD
 // create read update delete (destroy)
 
 // Get all users
 app.get('/users', function(req, res) {
-  fs.readFile('./storage.json', 'utf8', function(err, data){
-    if(err) throw err;
-    let usersArr = JSON.parse(data);
-
+  readToJson("./storage.json").then((usersArr)=>{
     res.json(usersArr);
+  })
+  .catch((err)=>{
+    console.error(err);
   })
 });
 
 // Get one user
 app.get('/users/:name', function(req, res) {
-  fs.readFile('./storage.json', 'utf8', function(err, data){
-    if(err) throw err;
-    let usersArr = JSON.parse(data);
-
+  readToJson("./storage.json").then((usersArr)=>{
     for(let i = 0; i<usersArr.length; i++){
       if(usersArr[i].name == req.params.name){
         res.json(usersArr[i]);
@@ -37,18 +60,15 @@ app.get('/users/:name', function(req, res) {
 
 // Create new user
 app.post('/users', function(req, res) {
-  fs.readFile("./storage.json", "utf8", function(err, data){
-    if(err) throw err;
-    let usersArr = JSON.parse(data);
-
-    console.log(req.body);
+  readToJson('./storage.json').then((usersArr)=>{
     usersArr.push(req.body);
 
-    fs.writeFile("./storage.json", JSON.stringify(usersArr), function(err){
-      if(err) throw err;
-
+    writeToJson("./storage.json", usersArr).then(()=>{
       res.sendStatus(200);
-
+    })
+    .catch((err)=>{
+      console.error(err);
+      res.sendStatus(400);
     })
 
   })
@@ -56,18 +76,19 @@ app.post('/users', function(req, res) {
 
 // Update one user
 app.put('/users/:name', function(req, res) {
-  fs.readFile('./storage.json', 'utf8', function(err, data){
-    if(err) throw err;
-    let usersArr = JSON.parse(data);
+  readToJson("./storage.json").then((usersArr)=>{
 
     for(let i = 0; i<usersArr.length; i++){
       if(usersArr[i].name == req.params.name){
         usersArr[i] = req.body;
 
-        fs.writeFile('./storage.json', JSON.stringify(usersArr), function(err){
-          console.log("success!");
+        writeToJson('./storage.json', usersArr).then(()=>{
           res.sendStatus(200);
-        });
+        })
+        .catch((err)=>{
+          console.error(err);
+          res.sendStatus(400);
+        })
         return;
 
       }
@@ -78,19 +99,21 @@ app.put('/users/:name', function(req, res) {
 
 // Delete one user
 app.delete('/users/:name', function(req, res) {
-  fs.readFile('./storage.json', 'utf8', function(err, data){
-    if(err) throw err;
-    let usersArr = JSON.parse(data);
+  readToJson("./storage.json").then((usersArr)=>{
+
 
     for(let i = 0; i<usersArr.length; i++){
       if(usersArr[i].name == req.params.name){
 
         usersArr.splice(i, 1);
 
-        fs.writeFile('./storage.json', JSON.stringify(usersArr), function(err){
-          console.log("success!");
+        writeToJson('./storage.json', usersArr).then(()=>{
           res.sendStatus(200);
-        });
+        })
+        .catch((err)=>{
+          console.error(err);
+          res.sendStatus(400);
+        })
         return;
 
       }
