@@ -1,0 +1,23 @@
+{
+  "name": "restfulcrud",
+  "version": "1.0.0",
+  "description": "Build your first crud app! Using what we learned yesterday create a full crud app for user objects. The objects should look like this: {   \"name\":\"user name\",   \"email\": \"user email\",   \"state\": \"CA\" }",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/troyamelotte/firstcrudassignment.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/troyamelotte/firstcrudassignment/issues"
+  },
+  "homepage": "https://github.com/troyamelotte/firstcrudassignment#readme",
+  "dependencies": {
+    "express": "^4.16.1"
+  }
+}
